@@ -1,37 +1,139 @@
-// SportsStoreGUI.java
 import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
 import javax.swing.*;
 
 public class SportsStoreGUI extends JFrame {
-    // Make these public so other panels can use them
     public static final Color BACKGROUND_COLOR = new Color(248, 250, 252);
     public static final Color PRIMARY_COLOR = new Color(59, 130, 246);
     public static final Color TEXT_COLOR = new Color(31, 41, 55);
     public static final Color LIGHT_GRAY = new Color(229, 231, 235);
     public static final Color PLACEHOLDER_COLOR = new Color(156, 163, 175);
     public static final Color WHITE = Color.WHITE;
+    public static final Color LOGO_GREEN = new Color(72, 187, 120); 
 
     public SportsStoreGUI() {
         setTitle("Sportory");
-        setSize(600, 700);
+        setSize(900, 700);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(false);
         getContentPane().setBackground(BACKGROUND_COLOR);
 
-        // Set modern look and feel
+        setIconImage(createSportoryIcon());
+
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                System.exit(0);
+            }
+        });
+
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {
-            // Ignore and use default
         }
 
         showLoginPanel();
     }
 
-    // Public so panels can use
+    private BufferedImage createSportoryIcon() {
+        int size = 64;
+        BufferedImage icon = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2d = icon.createGraphics();
+
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        g2d.setColor(LOGO_GREEN);
+        g2d.fillOval(0, 0, size, size);
+
+        g2d.setColor(Color.WHITE);
+        g2d.setStroke(new BasicStroke(2.5f));
+        
+        int centerX = size / 2;
+        int centerY = size / 2;
+
+        int storeWidth = 28;
+        int storeHeight = 18;
+        int storeX = centerX - storeWidth/2;
+        int storeY = centerY - 3;
+
+        g2d.drawRect(storeX, storeY, storeWidth, storeHeight);
+
+        g2d.drawLine(storeX - 4, storeY, storeX + storeWidth + 4, storeY);
+        g2d.drawLine(storeX - 4, storeY, storeX - 4, storeY - 6);
+        g2d.drawLine(storeX + storeWidth + 4, storeY, storeX + storeWidth + 4, storeY - 6);
+        g2d.drawLine(storeX - 4, storeY - 6, storeX + storeWidth + 4, storeY - 6);
+
+        g2d.drawLine(centerX, storeY, centerX, storeY + storeHeight);
+
+        for (int i = 0; i < 3; i++) {
+            int stripeY = storeY - 5 + (i * 2);
+            g2d.drawLine(storeX - 3, stripeY, storeX + storeWidth + 3, stripeY);
+        }
+        
+        g2d.dispose();
+        return icon;
+    }
+
+    private JPanel createLogoPanel() {
+        JPanel logoPanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g.create();
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                int width = getWidth();
+                int height = getHeight();
+                int centerX = width / 2;
+                int centerY = height / 2;
+
+                int circleSize = 80;
+                g2d.setColor(LOGO_GREEN);
+                g2d.fillOval(centerX - circleSize/2, centerY - circleSize/2, circleSize, circleSize);
+
+                g2d.setColor(Color.WHITE);
+                g2d.setStroke(new BasicStroke(3));
+
+                int storeWidth = 40;
+                int storeHeight = 25;
+                int storeX = centerX - storeWidth/2;
+                int storeY = centerY - 5;
+                g2d.drawRect(storeX, storeY, storeWidth, storeHeight);
+
+                g2d.drawLine(storeX - 5, storeY, storeX + storeWidth + 5, storeY);
+                g2d.drawLine(storeX - 5, storeY, storeX - 5, storeY - 8);
+                g2d.drawLine(storeX + storeWidth + 5, storeY, storeX + storeWidth + 5, storeY - 8);
+                g2d.drawLine(storeX - 5, storeY - 8, storeX + storeWidth + 5, storeY - 8);
+
+                g2d.drawLine(centerX, storeY, centerX, storeY + storeHeight);
+
+                for (int i = 0; i < 4; i++) {
+                    int stripeY = storeY - 7 + (i * 2);
+                    g2d.drawLine(storeX - 4, stripeY, storeX + storeWidth + 4, stripeY);
+                }
+
+                g2d.dispose();
+            }
+        };
+
+        logoPanel.setPreferredSize(new Dimension(120, 100));
+        logoPanel.setOpaque(false);
+        return logoPanel;
+    }
+
+    private JLabel createSportoryLabel() {
+        JLabel label = new JLabel("Sportory", SwingConstants.CENTER);
+        label.setFont(new Font("Segoe UI", Font.BOLD, 32));
+        label.setForeground(LOGO_GREEN);
+        label.setAlignmentX(Component.CENTER_ALIGNMENT);
+        return label;
+    }
+
     public JTextField createStyledTextField(String placeholder, int width) {
         JTextField field = new JTextField();
         field.setPreferredSize(new Dimension(width, 40));
@@ -42,6 +144,7 @@ public class SportsStoreGUI extends JFrame {
         ));
         field.setBackground(WHITE);
         field.setForeground(TEXT_COLOR);
+        field.setAlignmentX(Component.CENTER_ALIGNMENT);
         addPlaceholder(field, placeholder);
         return field;
     }
@@ -60,6 +163,7 @@ public class SportsStoreGUI extends JFrame {
         ));
         field.setBackground(WHITE);
         field.setForeground(TEXT_COLOR);
+        field.setAlignmentX(Component.CENTER_ALIGNMENT);
         addPlaceholder(field, placeholder);
         return field;
     }
@@ -87,28 +191,40 @@ public class SportsStoreGUI extends JFrame {
         });
     }
 
-    // Public so panels can use
     public JButton createPrimaryButton(String text, int width) {
         JButton button = new JButton(text);
         button.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        button.setBackground(null);
-        button.setForeground(Color.black);
-        button.setBorder(BorderFactory.createEmptyBorder());
+        button.setBackground(PRIMARY_COLOR);
+        button.setForeground(Color.WHITE);
+        button.setBorder(BorderFactory.createEmptyBorder(12, 24, 12, 24));
         button.setFocusPainted(false);
-        // Remove setPreferredSize or use only height
-        button.setMaximumSize(new Dimension(button.getPreferredSize().width, 300)); // Prevent stretching
+        button.setPreferredSize(new Dimension(width, 45));
+        button.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        button.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                button.setBackground(new Color(37, 99, 235));
+            }
+
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                button.setBackground(PRIMARY_COLOR);
+            }
+        });
+
         return button;
     }
 
     public JButton createSecondaryButton(String text, int width) {
         JButton button = new JButton(text);
         button.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        button.setBackground(new Color(255,0,0,128));
-        button.setForeground(Color.black);
+        button.setBackground(WHITE);
+        button.setForeground(PRIMARY_COLOR);
         button.setBorder(BorderFactory.createLineBorder(PRIMARY_COLOR, 2));
         button.setFocusPainted(false);
-        // Remove setPreferredSize or use only height
-        button.setMaximumSize(new Dimension(button.getPreferredSize().width, 50)); // Prevent stretching
+        button.setPreferredSize(new Dimension(width, 45));
+        button.setAlignmentX(Component.CENTER_ALIGNMENT);
         return button;
     }
 
@@ -116,6 +232,7 @@ public class SportsStoreGUI extends JFrame {
         JLabel label = new JLabel(text, SwingConstants.CENTER);
         label.setFont(new Font("Segoe UI", isBold ? Font.BOLD : Font.PLAIN, fontSize));
         label.setForeground(TEXT_COLOR);
+        label.setAlignmentX(Component.CENTER_ALIGNMENT);
         return label;
     }
 
@@ -124,6 +241,7 @@ public class SportsStoreGUI extends JFrame {
         label.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         label.setForeground(PRIMARY_COLOR);
         label.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        label.setAlignmentX(Component.CENTER_ALIGNMENT);
         return label;
     }
 
@@ -131,7 +249,11 @@ public class SportsStoreGUI extends JFrame {
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         mainPanel.setBackground(BACKGROUND_COLOR);
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(80, 50, 80, 50));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(60, 50, 80, 50));
+
+        JPanel logoPanel = createLogoPanel();
+        logoPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        JLabel sportoryLabel = createSportoryLabel();
 
         JLabel welcomeLabel = createStyledLabel("Welcome to Sportory", 28, true);
         JLabel subtitleLabel = createStyledLabel("Enter your username and password below to login.", 16, false);
@@ -139,12 +261,16 @@ public class SportsStoreGUI extends JFrame {
         JTextField usernameField = createStyledTextField("Username");
         JPasswordField passwordField = createStyledPasswordField("Password");
 
-        JButton loginButton = createPrimaryButton("LOGIN", 500);
+        JButton loginButton = createPrimaryButton("LOGIN", 200);
 
         JLabel noAccountLabel = createStyledLabel("Don't have an account?", 14, false);
         JLabel registerLink = createLinkLabel("Sign Up");
 
-        mainPanel.add(Box.createVerticalStrut(30));
+        mainPanel.add(Box.createVerticalStrut(20));
+        mainPanel.add(logoPanel);
+        mainPanel.add(Box.createVerticalStrut(10));
+        mainPanel.add(sportoryLabel);
+        mainPanel.add(Box.createVerticalStrut(20));
         mainPanel.add(welcomeLabel);
         mainPanel.add(Box.createVerticalStrut(10));
         mainPanel.add(subtitleLabel);
@@ -175,6 +301,8 @@ public class SportsStoreGUI extends JFrame {
 
             User user = DataStore.users.get(username);
             if (user != null && user.getPassword().equals(password)) {
+                DataStore.logUserLogin(username);
+                
                 if (user.isAdmin())
                     showAdminPanel();
                 else
@@ -197,7 +325,11 @@ public class SportsStoreGUI extends JFrame {
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         mainPanel.setBackground(BACKGROUND_COLOR);
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(80, 50, 80, 50));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(60, 50, 80, 50));
+
+        JPanel logoPanel = createLogoPanel();
+        logoPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        JLabel sportoryLabel = createSportoryLabel();
 
         JLabel welcomeLabel = createStyledLabel("Create Your Account", 28, true);
         JLabel subtitleLabel = createStyledLabel("Join Sportory and start shopping today.", 16, false);
@@ -210,7 +342,11 @@ public class SportsStoreGUI extends JFrame {
         JLabel hasAccountLabel = createStyledLabel("Already have an account?", 14, false);
         JLabel loginLink = createLinkLabel("Back to Login");
 
-        mainPanel.add(Box.createVerticalStrut(30));
+        mainPanel.add(Box.createVerticalStrut(20));
+        mainPanel.add(logoPanel);
+        mainPanel.add(Box.createVerticalStrut(10));
+        mainPanel.add(sportoryLabel);
+        mainPanel.add(Box.createVerticalStrut(20));
         mainPanel.add(welcomeLabel);
         mainPanel.add(Box.createVerticalStrut(10));
         mainPanel.add(subtitleLabel);
@@ -253,6 +389,7 @@ public class SportsStoreGUI extends JFrame {
                         JOptionPane.ERROR_MESSAGE);
             } else {
                 User newUser = new User(username, password, false);
+                // Add user to the data store
                 DataStore.users.put(username, newUser);
                 JOptionPane.showMessageDialog(this, "Account created successfully! You can now log in.",
                         "Success", JOptionPane.INFORMATION_MESSAGE);
